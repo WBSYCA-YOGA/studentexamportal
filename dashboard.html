@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - WBSYCA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f8ff, #e0ffff);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    h1 {
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #006666;
+    }
+    footer {
+      background: linear-gradient(90deg, #b2dfdb, #e0f7fa);
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .dropdown-menu a {
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .dropdown-toggle::after {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4 text-center">
+    <img src="https://i.ibb.co/d0bTS95d/header.jpg" class="img-fluid mb-3" alt="Header">
+    <h1>WBSYCA Yearly Examination Portal</h1>
+    <img src="https://i.ibb.co/ccG0mYQD/banner-design.png" class="img-fluid rounded mb-4" alt="Dashboard Banner">
+
+    <!-- EXAMINER MENU -->
+    <div id="examinerMenu" style="display: none;">
+      <div class="dropdown mb-3">
+        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Student Examination
+        </button>
+        <ul class="dropdown-menu w-100 text-start px-3">
+          <li><h6 class="dropdown-header text-primary">PP-01</h6></li>
+          <li><a class="dropdown-item" href="?page=student_reg_pp01">Student Registration PP-01</a></li>
+          <li><a class="dropdown-item" href="?page=exam_data_pp01">PP-01 Examination Data</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><h6 class="dropdown-header text-warning">PP-02</h6></li>
+          <li><a class="dropdown-item" href="?page=modify_pp02">Modify Student PP-02</a></li>
+          <li><a class="dropdown-item" href="?page=exam_data_pp02">PP-02 Examination Data</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CENTRE IN CHARGE MENU -->
+    <div id="limitedMenu" style="display: none;">
+      <div class="dropdown mb-3">
+        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Student Management
+        </button>
+        <ul class="dropdown-menu w-100 text-start px-3">
+          <li><a class="dropdown-item" href="?page=student_reg_pp01">Student Registration PP-01</a></li>
+          <li><a class="dropdown-item" href="?page=modify_pp02">Modify Student PP-02</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <a href="?page=index" class="btn btn-secondary w-100 mt-3 rounded-pill">← Logout</a>
+  </div>
+
+  <footer class="mt-5">© 2025 WBSYCA. All rights reserved.</footer>
+
+  <script>
+    const role = localStorage.getItem('userRole');
+    if (!role) {
+      alert('Please login first.');
+      window.location.href = '?page=login_required';
+    } else if (role === 'EXAMINER') {
+      document.getElementById('examinerMenu').style.display = 'block';
+    } else if (role === 'CENTRE IN CHARGE') {
+      document.getElementById('limitedMenu').style.display = 'block';
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

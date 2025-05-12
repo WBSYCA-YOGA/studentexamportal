@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PP-02 Examination Data</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: linear-gradient(135deg, #f0fff0, #f0f8ff); font-family: 'Segoe UI', sans-serif; }
+    h1 { font-weight: bold; text-transform: uppercase; color: #008080; margin-bottom: 20px; }
+    footer { background: linear-gradient(90deg, #b2dfdb, #e0f7fa); padding: 10px; text-align: center; font-size: 0.9rem; }
+    input { text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <img src="https://i.ibb.co/d0bTS95d/header.jpg" class="img-fluid mb-3" alt="Header">
+    <h1 class="text-center">PP-02 Examination Data</h1>
+
+    <!-- Search -->
+    <div class="input-group mb-4">
+      <input type="text" id="searchRoll" class="form-control" placeholder="Enter Roll No to Search">
+      <button class="btn btn-info" onclick="searchStudent()">🔍 Search</button>
+    </div>
+
+    <form id="examForm" onsubmit="submitExam(event)">
+      <div class="row mb-3">
+        <div class="col-md-6"><input type="text" id="registrationNo" class="form-control" placeholder="Registration No" required readonly></div>
+        <div class="col-md-6"><input type="text" id="rollNo" class="form-control" placeholder="Roll No" required></div>
+      </div>
+      <div class="mb-3"><input type="text" id="name" class="form-control" placeholder="Applicant Name" required readonly></div>
+
+      <div class="row mb-3">
+        <div class="col-md-4"><input type="number" id="pt" class="form-control" placeholder="PT (25)" min="0" max="25" required></div>
+        <div class="col-md-4"><input type="number" id="asana" class="form-control" placeholder="ASANA (25)" min="0" max="25" required></div>
+        <div class="col-md-4"><input type="number" id="oral" class="form-control" placeholder="ORAL (50)" min="0" max="50" required></div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6"><input type="number" id="total" class="form-control" placeholder="Total" readonly></div>
+        <div class="col-md-6"><input type="text" id="grade" class="form-control" placeholder="Grade" readonly></div>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100 rounded-pill">Submit</button>
+    </form>
+
+    <a href="?page=dashboard" class="btn btn-secondary w-100 mt-3 rounded-pill">← Back</a>
+  </div>
+
+  <footer class="mt-5">© 2025 WBSYCA. All rights reserved.</footer>
+
+  <script>
+    const role = localStorage.getItem('userRole');
+    if (role !== 'EXAMINER') {
+      alert('Access denied: Only EXAMINER can enter Exam Data.');
+      window.location.href = '?page=dashboard';
+    }
+
+    function searchStudent() {
+      const roll = document.getElementById('searchRoll').value;
+      if (!roll) return alert('Enter Roll No');
+      google.script.run.withSuccessHandler(data => {
+        if (data) {
+          document.getElementById('rollNo').value = roll;
+          document.getElementById('registrationNo').value = data.registrationNo;
+          document.getElementById('name').value = data.name;
+        } else {
+          alert('No record found.');
+        }
+      }).searchStudentPP02ByRoll(roll);
+    }
+
+    function calculateGrade() {
+      const pt = parseInt(document.getElementById('pt').value) || 0;
+      const asana = parseInt(document.getElementById('asana').value) || 0;
+      const oral = parseInt(document.getElementById('oral').value) || 0;
+      const total = pt + asana + oral;
+      document.getElementById('total').value = total;
+
+      let grade = '';
+      if (total >= 61) grade = '1ST DIV.';
+      else if (total >= 41) grade = '2ND DIV.';
+      else if (total >= 31) grade = '3RD DIV.';
+      else if (total >= 21) grade = 'PASS';
+      else grade = 'FAIL';
+
+      document.getElementById('grade').value = grade;
+    }
+
+    function submitExam(event) {
+      event.preventDefault();
+      calculateGrade();
+      const data = {
+        registrationNo: document.getElementById('registrationNo').value,
+        rollNo: document.getElementById('rollNo').value,
+        name: document.getElementById('name').value,
+        pt: document.getElementById('pt').value,
+        asana: document.getElementById('asana').value,
+        oral: document.getElementById('oral').value,
+        userEmail: localStorage.getItem('loginEmail') || 'Unknown'
+      };
+      google.script.run.withSuccessHandler(msg => {
+        alert(msg);
+        document.getElementById('examForm').reset();
+        document.getElementById('total').value = '';
+        document.getElementById('grade').value = '';
+      }).saveExamDataPP02(data);
+    }
+
+    document.getElementById('pt').addEventListener('input', calculateGrade);
+    document.getElementById('asana').addEventListener('input', calculateGrade);
+    document.getElementById('oral').addEventListener('input', calculateGrade);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

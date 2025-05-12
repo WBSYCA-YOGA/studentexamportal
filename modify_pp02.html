@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Modify Student PP-02</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: linear-gradient(135deg, #ffcccc, #ccffcc); font-family: 'Segoe UI', sans-serif; }
+    h1 { font-weight: bold; text-transform: uppercase; color: #008080; margin-bottom: 20px; }
+    footer { background: linear-gradient(90deg, #b2dfdb, #e0f7fa); padding: 10px; text-align: center; font-size: 0.9rem; }
+    input, select, textarea { text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <img src="https://i.ibb.co/d0bTS95d/header.jpg" class="img-fluid mb-3" alt="Header">
+    <h1 class="text-center">Modify Student PP-02</h1>
+
+    <!-- Search Bar -->
+    <div class="input-group mb-4">
+      <input type="text" id="searchRollOrName" class="form-control" placeholder="Enter Roll No or Name to Search">
+      <button class="btn btn-info" onclick="searchStudent()">🔍 Search</button>
+    </div>
+
+    <form id="modifyForm" onsubmit="submitModifyPP02(event)">
+      <div class="row mb-3">
+        <div class="col-md-6"><input type="text" id="registrationNo" class="form-control" placeholder="Registration No" required readonly></div>
+        <div class="col-md-6"><input type="text" id="rollNo" class="form-control" placeholder="Roll No" required readonly></div>
+      </div>
+      <div class="mb-3"><input type="text" id="name" class="form-control" placeholder="Applicant Name" required></div>
+      <div class="row mb-3">
+        <div class="col-md-6"><input type="date" id="dob" class="form-control" placeholder="DOB" required></div>
+        <div class="col-md-6"><input type="text" id="guardianName" class="form-control" placeholder="Guardian Name" required></div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6"><input type="text" id="relation" class="form-control" placeholder="Relation" required></div>
+        <div class="col-md-6"><input type="tel" id="contactNo" class="form-control" placeholder="Contact No" required></div>
+      </div>
+      <div class="mb-3"><input type="text" id="subject" class="form-control" placeholder="Subject" required></div>
+      <div class="row mb-3">
+        <div class="col-md-6"><input type="text" id="centreName" class="form-control" placeholder="Centre Name" required></div>
+        <div class="col-md-6"><input type="text" id="centreCode" class="form-control" placeholder="Centre Code" required></div>
+      </div>
+      <div class="mb-3"><input type="text" id="centreAddress" class="form-control" placeholder="Centre Address" required></div>
+      <div class="mb-3"><label>Passport Photo:</label><input type="file" id="photo" class="form-control"></div>
+      <div class="mb-3"><label>Birth Document:</label><input type="file" id="birthDoc" class="form-control"></div>
+
+      <button type="submit" class="btn btn-warning w-100 rounded-pill">Submit</button>
+    </form>
+
+    <a href="?page=dashboard" class="btn btn-secondary w-100 mt-3 rounded-pill">← Back</a>
+  </div>
+
+  <footer class="mt-5">© 2025 WBSYCA. All rights reserved.</footer>
+
+  <script>
+    function searchStudent() {
+      const input = document.getElementById('searchRollOrName').value;
+      if (!input) return alert('Enter a Roll No or Name');
+      google.script.run.withSuccessHandler(data => {
+        if (data) {
+          document.getElementById('registrationNo').value = data.registrationNo;
+          document.getElementById('rollNo').value = data.rollNo;
+          document.getElementById('name').value = data.name;
+          document.getElementById('dob').value = data.dob;
+          document.getElementById('guardianName').value = data.guardianName;
+          document.getElementById('relation').value = data.relation;
+          document.getElementById('contactNo').value = data.contactNo;
+          document.getElementById('subject').value = data.subject;
+          document.getElementById('centreName').value = data.centreName;
+          document.getElementById('centreCode').value = data.centreCode;
+          document.getElementById('centreAddress').value = data.centreAddress;
+        } else {
+          alert('No record found.');
+        }
+      }).searchStudentPP02(input);
+    }
+
+    function submitModifyPP02(event) {
+      event.preventDefault();
+
+      const photo = document.getElementById('photo').files[0];
+      const birthDoc = document.getElementById('birthDoc').files[0];
+
+      const reader1 = new FileReader();
+      const reader2 = new FileReader();
+
+      reader1.onload = function () {
+        const photoBase64 = reader1.result.split(',')[1];
+        reader2.onload = function () {
+          const birthBase64 = reader2.result.split(',')[1];
+          const data = {
+            registrationNo: document.getElementById('registrationNo').value,
+            rollNo: document.getElementById('rollNo').value,
+            name: document.getElementById('name').value,
+            dob: document.getElementById('dob').value,
+            guardianName: document.getElementById('guardianName').value,
+            relation: document.getElementById('relation').value,
+            contactNo: document.getElementById('contactNo').value,
+            subject: document.getElementById('subject').value,
+            centreName: document.getElementById('centreName').value,
+            centreCode: document.getElementById('centreCode').value,
+            centreAddress: document.getElementById('centreAddress').value,
+            photoBase64,
+            photoType: photo?.type,
+            photoName: photo?.name,
+            birthBase64,
+            birthType: birthDoc?.type,
+            birthName: birthDoc?.name
+          };
+          google.script.run.withSuccessHandler(msg => {
+            alert(msg);
+            document.getElementById('modifyForm').reset();
+          }).modifyStudentPP02(data);
+        };
+        if (birthDoc) reader2.readAsDataURL(birthDoc);
+        else reader2.onload();
+      };
+
+      if (photo) reader1.readAsDataURL(photo);
+      else reader1.onload();
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
